@@ -43,7 +43,7 @@ namespace Solution
     /// </summary>
     /// <param name="Key">the types of the table's keys (uses Equals())</param>
     /// <param name="Value">the types of the table's values</param>
-    public interface Table<Key, Value>
+    public interface Table<Key, Value> : IEnumerable<Key>
     {
         /// <summary>
         /// Add a new entry in the hash table. If an entry with the
@@ -70,7 +70,6 @@ namespace Solution
         /// <exception cref="NonExistentKey">if Contains(key) is false</exception>
         Value Get(Key k);
     }
-
 
     /// <summary>
     /// A class representing an element consisting of the Key and Value. 
@@ -221,45 +220,43 @@ namespace Solution
         /// <exception cref="NonExistentKey">if Contains(key) is false</exception>
         public Value Get(Key k)
         {
+            if (!Contains(k))
+            {
+                throw new NonExistentKey<Key>(k);
+            }
+
             int location = HashFunction(k);
 
             Value nodeValue = default(Value);
 
-            try
+            List<Node<Key, Value>> myList = arrayList[location];
+
+            // If the given location of array is null
+            // exception is thrown as the given key does 
+            // not exists in the table.
+            if (myList == null)
             {
-                List<Node<Key, Value>> myList = arrayList[location];
-
-                // If the given location of array is null
-                // exception is thrown as the given key does 
-                // not exists in the table.
-                if (myList == null)
-                {
-                    throw new NonExistentKey<Key>(k);
-                }
-
-                // Iterates each node in the list at given
-                // location of array.
-                foreach (Node<Key, Value> node in myList)
-                {
-                    if (node == null)
-                    {
-                        throw new NonExistentKey<Key>(k);
-                    }
-                    if (node.key.Equals(k))
-                    {
-                        nodeValue = node.value;
-                    }
-                }
+                throw new NonExistentKey<Key>(k);
             }
-            catch (NonExistentKey<Key> nek)
+
+            // Iterates each node in the list at given
+            // location of array.
+            foreach (Node<Key, Value> node in myList)
             {
-                Console.WriteLine(nek.Message);
-                Console.WriteLine(nek.StackTrace);
+                if (node.key.Equals(k))
+                {
+                    nodeValue = node.value;
+                }
             }
             return nodeValue;
         }
 
-
+        /// <summary>
+        /// This method checks if the current threshold exceeds defined
+        /// threshold.
+        /// </summary>
+        /// <returns>true if and only if current threshold
+        /// exceeds defined threshold.</returns>
         bool exceedsThreshold()
         {
             double getCount = countOfElements;
@@ -273,6 +270,10 @@ namespace Solution
 
         public static List<Node<Key, Value>>[] newArrayList;
 
+        /// <summary>
+        /// Creates a new array 50% larger than the size of current array.
+        /// Calls a method to rehash exiting elements of the list in array.
+        /// </summary>
         void resizeTable()
         {
             double computeNewSize = (sizeOfArray + (sizeOfArray / 2));
@@ -287,11 +288,17 @@ namespace Solution
                 rehashTable(i);
             }
 
+            // updates existing arrayList to the newly created arraylist
             arrayList = newArrayList;
-
-            Console.WriteLine("Successfully rehashed");
+            // Sets the temporary array list to null to make it 
+            // eligible for garbage collection
+            newArrayList = null;
         }
 
+        /// <summary>
+        /// Rehashes all the elements from old array to new array.
+        /// </summary>
+        /// <param name="i"></param>
         void rehashTable(int i)
         {
             List<Node<Key, Value>> myList = arrayList[i];
@@ -342,7 +349,43 @@ namespace Solution
             }
         }
 
+        /// <summary>
+        /// Iterates the Table data-structure
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<Key> GetEnumerator()
+        {
+            // Traverse the entire table array
+            for (int i = 0; i < arrayList.Length; i++)
+            {
+                List<Node<Key, Value>> myList = arrayList[i];
 
+                if (myList == null)
+                {
+                    Console.Write("");
+                }
+
+                else
+                {
+                    // Traverses each node in the list
+                    foreach (Node<Key, Value> node in myList)
+                    {
+                        Key k = node.key;
+                        yield return k;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Implements the IEnumerable interface method
+        /// </summary>
+        /// <returns></returns>
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            // Calls the generic version of enumerator here
+            return GetEnumerator();
+        }
     }
 
     //class TestTable
@@ -351,7 +394,6 @@ namespace Solution
     //    {
     //    }
     //}
-
 
     class TableFactory
     {
@@ -372,7 +414,6 @@ namespace Solution
         {
             return (new LinkedHashTable<K, V>(capacity, loadThreshold));
         }
-
     }
 
     class MainClass
@@ -381,28 +422,25 @@ namespace Solution
         {
             Table<String, String> ht = TableFactory.Make<String, String>(4, 0.5);
             ht.Put("Joe", "Doe");
-            Console.WriteLine(ht.Get("Joe"));
             ht.Put("Jane", "Brain");
-            Console.WriteLine(ht.Get("Jane"));
             ht.Put("Chris", "Swiss");
-            Console.WriteLine(ht.Get("Chris"));
 
             try
             {
-                //foreach (String first in ht)
-                //{
-                //    Console.WriteLine(first + " -> " + ht.Get(first));
-                //}
+                foreach (String first in ht)
+                {
+                    Console.WriteLine(first + " -> " + ht.Get(first));
+                }
                 Console.WriteLine("=========================");
 
                 ht.Put("Wavy", "Gravy");
                 Console.WriteLine(ht.Get("Wavy"));
                 ht.Put("Chris", "Bliss");
                 Console.WriteLine(ht.Get("Chris"));
-                //foreach (String first in ht)
-                //{
-                //    Console.WriteLine(first + " -> " + ht.Get(first));
-                //}
+                foreach (String first in ht)
+                {
+                    Console.WriteLine(first + " -> " + ht.Get(first));
+                }
                 Console.WriteLine("=========================");
 
                 Console.Write("Jane -> ");
