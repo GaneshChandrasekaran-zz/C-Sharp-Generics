@@ -121,29 +121,7 @@ namespace Solution
 
             arrayList = new List<Node<Key, Value>>[sizeOfArray];
         }
-
-        //// Accessor methods
-        //public int getSizeOfArray()
-        //{
-        //    return this.sizeOfArray;
-        //}
-
-        //public double getDefinedThreshold()
-        //{
-        //    return this.definedThreshold;
-        //}
-
-        //public double getCurrentThreshold()
-        //{
-
-        //    double getCount = countOfElements;
-        //    double getSize = sizeOfArray;
-        //    double currentThreshold1 = getCount / getSize;
-        //    this.currentThreshold = currentThreshold1;
-
-        //    return this.currentThreshold;
-        //} // Accessor methods end
-
+        
         /// <summary>
         /// Add a new entry in the hash table. If an entry with the
         /// given key already exists, it is replaced without error.
