@@ -412,18 +412,12 @@ namespace Solution
 
     /// <summary>
     /// Tests all the cases deifned in the test() method. 
+    /// 
+    /// Author: Ganesh Chandrasekaran
+    /// E-mail: gxc4795@rit.edu
     /// </summary>
     class TestTable
     {
-        static int size = 4;
-        static double threshold = 0.5;
-        static int countOfElements = 0;
-
-        static double currentThreshold()
-        {
-            return ((double)countOfElements/(double)size);
-        }
-
         /// <summary>
         /// The test method checks if the 3 methods defined in table interface
         /// succeed or fails. It also checks if the data structure resizes 
@@ -435,7 +429,7 @@ namespace Solution
             Console.WriteLine("");
             // Test if table is created
             Console.WriteLine("Testing: If table is being created...");
-            Table<String, String> htSS = TableFactory.Make<String, String>(size, threshold);
+            Table<String, String> htSS = TableFactory.Make<String, String>(4, 0.5);
 
             if (htSS == null)
             {
@@ -449,11 +443,10 @@ namespace Solution
             Console.WriteLine("");
 
             // Testing Contains method
+            Console.WriteLine("Testing: Contains method for true...");
             htSS.Put("Hi", "Hello");
-            countOfElements++;
             bool getKeyValue = htSS.Contains("Hi");
 
-            Console.WriteLine("Testing: Contains method for true...");
             if (getKeyValue == true)
             {
                 Console.WriteLine("Contains method succeeds.");
@@ -482,7 +475,7 @@ namespace Solution
             // is getting added to the table.
             Console.WriteLine("Testing: Put method to add a new key...");
             htSS.Put("Joe", "Doe");
-            countOfElements++;
+
             bool getKeyValue2 = htSS.Contains("Joe");
             String getValueValue2 = htSS.Get("Joe");
 
@@ -517,7 +510,6 @@ namespace Solution
             // is getting retrieved from the table.
             Console.WriteLine("Testing: Get method to retrieve an existing key...");
             htSS.Put("Jim", "Tim");
-            countOfElements++;
 
             String getValueValue4 = htSS.Get("Jim");
 
@@ -528,58 +520,6 @@ namespace Solution
             else
             {
                 Console.WriteLine("Get method fails.");
-            }
-
-            Console.WriteLine("");
-
-            Console.WriteLine("Testing: Dynamic resizing of array and rehashing of elements...");
-
-            LinkedHashTable<Int32, String> htIS = new LinkedHashTable<Int32, String>(4, 0.75);
-            countOfElements = 0;
-
-            Console.WriteLine("Current size of array: " + size + " --- " +
-            "Defined threshold: " + TestTable.currentThreshold());
-
-            Console.WriteLine("");
-
-            htIS.Put(1, "A");
-            countOfElements++;
-            Console.WriteLine("New element added.");
-            Console.WriteLine("Current size of array: " + size + " --- " +
-                        "Current threshold: " + TestTable.currentThreshold());
-            Console.WriteLine("");
-
-            htIS.Put(2, "B");
-            countOfElements++;
-            Console.WriteLine("New element added.");
-            Console.WriteLine("Current size of array: " + size + " --- " +
-                        "Current threshold: " + TestTable.currentThreshold());
-            Console.WriteLine("");
-
-            int previousSize = size;
-            double previousThreshold = threshold;
-
-            htIS.Put(3, "C");
-            countOfElements++;
-            Console.WriteLine("New element added.");
-            Console.WriteLine("Should resize and rehash now...");
-            Console.WriteLine("");
-
-            int currentSize = size;
-            double currentThreshold = ((double)countOfElements/(double)currentSize);
-            double definedThreshold = threshold;
-
-            Console.WriteLine("Current size of array: " + size + " --- " +
-                        "Current threshold: " + TestTable.currentThreshold());
-            Console.WriteLine("");
-
-            if ((((double)currentSize) == (1.5 * previousSize)) && (currentThreshold < definedThreshold))
-            {
-                Console.WriteLine("Dynamic resizing and rehash implemented successfully!");
-            }
-            else
-            {
-                Console.WriteLine("Dynamic resizing and rehash failed!");
             }
 
             Console.WriteLine("");
