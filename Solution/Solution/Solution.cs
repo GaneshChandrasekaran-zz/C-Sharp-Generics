@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// E-mail: gxc4795@rit.edu
 /// 
 /// Program to write a generic class that implements chained hashtable.
-
+/// 
 
 namespace Solution
 {
@@ -43,13 +43,12 @@ namespace Solution
     /// </summary>
     /// <param name="Key">the types of the table's keys (uses Equals())</param>
     /// <param name="Value">the types of the table's values</param>
-    public interface Table<Key, Value> : IEnumerable<Key>
+    interface Table<Key, Value> : IEnumerable<Key>
     {
         /// <summary>
         /// Add a new entry in the hash table. If an entry with the
         /// given key already exists, it is replaced without error.
-        /// put() always succeeds.
-        /// (Details left to implementing classes.)
+        /// Put() always succeeds.
         /// </summary>
         /// <param name="k">the key for the new or existing entry</param>
         /// <param name="v">the (new) value for the key</param>
@@ -103,9 +102,10 @@ namespace Solution
         int sizeOfArray;
         double definedThreshold;
 
+        double currentThreshold = 0.0;
         int countOfElements = 0;
 
-        public static List<Node<Key, Value>>[] arrayList;
+        public List<Node<Key, Value>>[] arrayList;
 
         /// <summary>
         /// A parametrized constructor which when invoked 
@@ -121,6 +121,28 @@ namespace Solution
 
             arrayList = new List<Node<Key, Value>>[sizeOfArray];
         }
+
+        //// Accessor methods
+        //public int getSizeOfArray()
+        //{
+        //    return this.sizeOfArray;
+        //}
+
+        //public double getDefinedThreshold()
+        //{
+        //    return this.definedThreshold;
+        //}
+
+        //public double getCurrentThreshold()
+        //{
+
+        //    double getCount = countOfElements;
+        //    double getSize = sizeOfArray;
+        //    double currentThreshold1 = getCount / getSize;
+        //    this.currentThreshold = currentThreshold1;
+
+        //    return this.currentThreshold;
+        //} // Accessor methods end
 
         /// <summary>
         /// Add a new entry in the hash table. If an entry with the
@@ -177,7 +199,7 @@ namespace Solution
         }
 
         /// <summary>
-        /// Takes the key as parameter and returns the loctaion
+        /// Takes the key as parameter and returns the location
         /// of array at which the corressponding key-value pair needs to be added.
         /// </summary>
         /// <param name="k">The key on which hashcode needs to be done</param>
@@ -233,7 +255,7 @@ namespace Solution
 
             // If the given location of array is null
             // exception is thrown as the given key does 
-            // not exists in the table.
+            // not exist in the table.
             if (myList == null)
             {
                 throw new NonExistentKey<Key>(k);
@@ -261,18 +283,18 @@ namespace Solution
         {
             double getCount = countOfElements;
             double getSize = sizeOfArray;
-            double currentThreshold = getCount / getSize;
+            double currentThreshold = (getCount / getSize);
             if (currentThreshold >= definedThreshold)
                 return true;
             else
                 return false;
         }
 
-        public static List<Node<Key, Value>>[] newArrayList;
+        public List<Node<Key, Value>>[] newArrayList;
 
         /// <summary>
         /// Creates a new array 50% larger than the size of current array.
-        /// Calls a method to rehash exiting elements of the list in array.
+        /// Calls a method to rehash existing elements of the list in array.
         /// </summary>
         void resizeTable()
         {
@@ -388,12 +410,183 @@ namespace Solution
         }
     }
 
-    //class TestTable
-    //{
-    //    public static void test()
-    //    {
-    //    }
-    //}
+    /// <summary>
+    /// Tests all the cases deifned in the test() method. 
+    /// </summary>
+    class TestTable
+    {
+        static int size = 4;
+        static double threshold = 0.5;
+        static int countOfElements = 0;
+
+        static double currentThreshold()
+        {
+            return ((double)countOfElements/(double)size);
+        }
+
+        /// <summary>
+        /// The test method checks if the 3 methods defined in table interface
+        /// succeed or fails. It also checks if the data structure resizes 
+        /// dynamically when reaches or exceeds threshold.
+        /// </summary>
+        public static void test()
+        {
+            Console.WriteLine("*********************** Testing Begins ***********************");
+            Console.WriteLine("");
+            // Test if table is created
+            Console.WriteLine("Testing: If table is being created...");
+            Table<String, String> htSS = TableFactory.Make<String, String>(size, threshold);
+
+            if (htSS == null)
+            {
+                Console.WriteLine("Table creation failed!");
+            }
+            else
+            {
+                Console.WriteLine("Table created succesfully!");
+            }
+
+            Console.WriteLine("");
+
+            // Testing Contains method
+            htSS.Put("Hi", "Hello");
+            countOfElements++;
+            bool getKeyValue = htSS.Contains("Hi");
+
+            Console.WriteLine("Testing: Contains method for true...");
+            if (getKeyValue == true)
+            {
+                Console.WriteLine("Contains method succeeds.");
+            }
+            else
+            {
+                Console.WriteLine("Contains method fails.");
+            }
+
+            Console.WriteLine("");
+
+            Console.WriteLine("Testing: Contains method for false...");
+            bool getKeyValue1 = htSS.Contains("Lol");
+            if (getKeyValue1 == false)
+            {
+                Console.WriteLine("Contains method succeeds.");
+            }
+            else
+            {
+                Console.WriteLine("Contains method fails.");
+            }
+
+            Console.WriteLine("");
+
+            // Testing Put method to see if element
+            // is getting added to the table.
+            Console.WriteLine("Testing: Put method to add a new key...");
+            htSS.Put("Joe", "Doe");
+            countOfElements++;
+            bool getKeyValue2 = htSS.Contains("Joe");
+            String getValueValue2 = htSS.Get("Joe");
+
+            if ((getKeyValue2 == true) && (getValueValue2 == "Doe"))
+            {
+                Console.WriteLine("Put method succeeds.");
+            }
+            else
+            {
+                Console.WriteLine("Put method fails.");
+            }
+
+            Console.WriteLine("");
+
+            Console.WriteLine("Testing: Put method to replace existing new key...");
+            htSS.Put("Joe", "Toe");
+            bool getKeyValue3 = htSS.Contains("Joe");
+            String getValueValue3 = htSS.Get("Joe");
+
+            if ((getKeyValue3 == true) && (getValueValue3 == "Toe"))
+            {
+                Console.WriteLine("Put method succeeds.");
+            }
+            else
+            {
+                Console.WriteLine("Put method fails.");
+            }
+
+            Console.WriteLine("");
+
+            // Testing Get method to see if element value
+            // is getting retrieved from the table.
+            Console.WriteLine("Testing: Get method to retrieve an existing key...");
+            htSS.Put("Jim", "Tim");
+            countOfElements++;
+
+            String getValueValue4 = htSS.Get("Jim");
+
+            if (getValueValue4 == "Tim")
+            {
+                Console.WriteLine("Get method succeeds.");
+            }
+            else
+            {
+                Console.WriteLine("Get method fails.");
+            }
+
+            Console.WriteLine("");
+
+            Console.WriteLine("Testing: Dynamic resizing of array and rehashing of elements...");
+
+            LinkedHashTable<Int32, String> htIS = new LinkedHashTable<Int32, String>(4, 0.75);
+            countOfElements = 0;
+
+            Console.WriteLine("Current size of array: " + size + " --- " +
+            "Defined threshold: " + TestTable.currentThreshold());
+
+            Console.WriteLine("");
+
+            htIS.Put(1, "A");
+            countOfElements++;
+            Console.WriteLine("New element added.");
+            Console.WriteLine("Current size of array: " + size + " --- " +
+                        "Current threshold: " + TestTable.currentThreshold());
+            Console.WriteLine("");
+
+            htIS.Put(2, "B");
+            countOfElements++;
+            Console.WriteLine("New element added.");
+            Console.WriteLine("Current size of array: " + size + " --- " +
+                        "Current threshold: " + TestTable.currentThreshold());
+            Console.WriteLine("");
+
+            int previousSize = size;
+            double previousThreshold = threshold;
+
+            htIS.Put(3, "C");
+            countOfElements++;
+            Console.WriteLine("New element added.");
+            Console.WriteLine("Should resize and rehash now...");
+            Console.WriteLine("");
+
+            int currentSize = size;
+            double currentThreshold = ((double)countOfElements/(double)currentSize);
+            double definedThreshold = threshold;
+
+            Console.WriteLine("Current size of array: " + size + " --- " +
+                        "Current threshold: " + TestTable.currentThreshold());
+            Console.WriteLine("");
+
+            if ((((double)currentSize) == (1.5 * previousSize)) && (currentThreshold < definedThreshold))
+            {
+                Console.WriteLine("Dynamic resizing and rehash implemented successfully!");
+            }
+            else
+            {
+                Console.WriteLine("Dynamic resizing and rehash failed!");
+            }
+
+            Console.WriteLine("");
+            Console.WriteLine("*********************** Testing Ends ***********************");
+            Console.WriteLine("");
+        }
+    }
 
     class TableFactory
     {
@@ -420,6 +613,9 @@ namespace Solution
     {
         public static void Main(string[] args)
         {
+            // Call the following method to run the Test Class's test method, else comment it
+            TestTable.test();
+
             Table<String, String> ht = TableFactory.Make<String, String>(4, 0.5);
             ht.Put("Joe", "Doe");
             ht.Put("Jane", "Brain");
@@ -434,9 +630,8 @@ namespace Solution
                 Console.WriteLine("=========================");
 
                 ht.Put("Wavy", "Gravy");
-                Console.WriteLine(ht.Get("Wavy"));
                 ht.Put("Chris", "Bliss");
-                Console.WriteLine(ht.Get("Chris"));
+
                 foreach (String first in ht)
                 {
                     Console.WriteLine(first + " -> " + ht.Get(first));
